@@ -1,0 +1,72 @@
+[
+    {
+        "term": "abandoned",
+        "hint": " ends in -ed and comes after two auxiliaries (helpers)",
+        "answer": "verb",
+        "choice1": "noun",
+        "choice2": "adverb",
+        "choice3": "transition",
+        "definition": "to give up or to stop taking care of something",
+        "sentence": "Her car had been abandoned on the side of the road."
+    },
+    {
+        "term": "abandoning",
+        "hint": " begins a sentence and ends with -ing",
+        "answer": "gerund",
+        "choice1": "adjective",
+        "choice2": "infinitive",
+        "choice3": "adverb",
+        "definition": "forgetting about something or leaving something behind",
+        "sentence": "Abandoning work early was the only way she could get to her dentist appointment on time."
+    },
+    {
+        "term": "abandonment",
+        "hint": "ends with the suffix -ment and comes after a preposition",
+        "answer": "noun",
+        "choice1": "verb",
+        "choice2": "transition",
+        "choice3": "gerund",
+        "definition": "the action of leaving something behind",
+        "sentence": "As the bus rolled off, feelings of abandonment washed over him."
+    },
+    {
+        "term": "academically",
+        "hint": "ends with the suffix -ly and describes an adjective",
+        "answer": "adverb",
+        "choice1": "noun",
+        "choice2": "verb",
+        "choice3": "adjective",
+        "definition": "in a way that relates to education and scholarship",
+        "sentence": "He was neither academically nor socially ready to move on to the next grade at school."
+    },
+    {
+        "term": "academy",
+        "hint": "starts with a capital letter and comes after an article",
+        "answer": "noun",
+        "choice1": "adjective",
+        "choice2": "verb",
+        "choice3": "coordinator",
+        "definition": "a place of study or training in a special field",
+        "sentence": "She spent four years studying violin at the Academy of Music."
+    },
+    {
+        "term": "convinced",
+        "hint": "comes after the subject and ends with -ed",
+        "answer": "verb",
+        "choice1": "adjective",
+        "choice2": "noun",
+        "choice3": "coordinator",
+        "definition": "to cause someone to believe that something is worth doing",
+        "sentence": "I convinced my brother to let me borrow his car."
+    },
+    {
+        "term": "compatible",
+        "hint": "ends with the suffix -ible",
+        "answer": "adjective",
+        "choice1": "noun",
+        "choice2": "verb",
+        "choice3": "adverb",
+        "definition": "able to live and work well together",
+        "sentence": "My husband and I are quite compatible; we rarely argue about anything."
+    }
+]
