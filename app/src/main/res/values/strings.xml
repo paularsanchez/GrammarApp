@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Grammar App</string>
+<!--
+    <string name="word_1">PROPONENT</string>
+    <string name="title_2">POISONED</string>
+    <string name="title_3">THEORY</string>
+    <string name="title_4">ARSENIC</string>
+
+    <string name="definition_1">Ben Weider is a proponent of the theory that Napoleon was poisoned with arsenic.</string>
+
+    -->
+</resources>
