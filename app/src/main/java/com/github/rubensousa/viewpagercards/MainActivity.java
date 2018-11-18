@@ -18,12 +18,21 @@ import android.os.Parcelable;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.github.rubensousa.viewpagercards.R.*;
@@ -31,13 +40,14 @@ import static com.github.rubensousa.viewpagercards.R.*;
 public class MainActivity extends AppCompatActivity implements MyCallBack
 //implements View.OnClickListener
         //CompoundButton.OnCheckedChangeListener
-        {
+{
 
     private Button mDictionary;
     private Button mHint;
     private ViewPager mViewPager;
     private JsonLoader mQuestions = JsonLoader.getJsonLoader(this);
     private List<Question> myQuestions;
+    private ArrayList<models.Question> DBQuestions = new ArrayList<>();
 
     private CardPagerAdapter mCardAdapter;
     private ShadowTransformer mCardShadowTransformer;
@@ -47,9 +57,16 @@ public class MainActivity extends AppCompatActivity implements MyCallBack
     private boolean mShowingFragments = false;
     private ListView listView;
     public static int topS = 0, bottomS = 0;
+    private String TAG = "firebaseDB";
+
+    FirebaseAuth mAuth=FirebaseAuth.getInstance();
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference("message");
+
+
     //we could call this anything
-    public void setTScore(int top, int bottom){
-        TextView score = (TextView)findViewById(id.tScore);
+    public void setTScore(int top, int bottom) {
+        TextView score = (TextView) findViewById(id.tScore);
         score.setText(top + "/" + bottom);
 
     }
@@ -60,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements MyCallBack
         setContentView(layout.activity_main);
         mViewPager = (ViewPager) findViewById(id.viewPager);
         mDictionary = (Button) findViewById(R.id.definitionBtn);
-        mHint = (Button)findViewById(R.id.bHint);
+        mHint = (Button) findViewById(R.id.bHint);
         //((CheckBox) findViewById(id.checkBox)).setOnCheckedChangeListener(this);
         //mButton.setOnClickListener(this);
 
@@ -69,7 +86,15 @@ public class MainActivity extends AppCompatActivity implements MyCallBack
         mCardShadowTransformer = new ShadowTransformer(mViewPager, mCardAdapter);
         //mFragmentCardShadowTransformer = new ShadowTransformer(mViewPager, mFragmentCardAdapter);
         loadQuestionsToActivity();
-        loadtoAdapter();
+
+        //from local json repo
+        //loadtoAdapter();
+
+
+        //load from firebase
+        loadtoAdapterFirebase();
+
+
         TextView textView = findViewById(id.tScore);
         SharedPreferences sharedPref = getSharedPreferences("scores", Context.MODE_PRIVATE);
         textView.setText(sharedPref.getInt("top", 0) + "/" + sharedPref.getInt("bottom", 0));
@@ -90,95 +115,127 @@ public class MainActivity extends AppCompatActivity implements MyCallBack
         mViewPager.setAdapter(mCardAdapter);
         mViewPager.setPageTransformer(false, mCardShadowTransformer);
         mViewPager.setOffscreenPageLimit(3);
+
+
+        Toast.makeText(this, "Welcome, " + mAuth.getCurrentUser().getEmail().toString(), Toast.LENGTH_LONG).show();
     }
+
     @Override
     protected void onStart() {
         super.onStart();
     }
 
-    public void loadQuestionsToActivity(){
+    public void loadQuestionsToActivity() {
         InputStream file = getResources().openRawResource(raw.questionlistjson);
         try {
             Reader reader = new BufferedReader(new InputStreamReader(file, "UTF-8"));
             mQuestions.loadQuestions(reader);
 
-        }catch (UnsupportedEncodingException e){
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
-    public void loadtoAdapter(){
+    public void loadtoAdapterFirebase() {
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference ref = database.child("questions").child("a");
+
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    models.Question question = singleSnapshot.getValue(models.Question.class);
+                    DBQuestions.add(question);
+                    Log.e("sax", "event listener -->" + DBQuestions.toString());
+                    mCardAdapter.addCardItem(new CardItem(question.term, question.sentence, question.answer, question.choice1, question.choice2, question.choice3));
+                }
+
+                mViewPager.setAdapter(mCardAdapter);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException());
+            }
+        });
+    }
+
+    //load from local json
+    public void loadtoAdapter() {
         myQuestions = mQuestions.getQuestions();
-        for(Question q : myQuestions){
+        for (Question q : myQuestions) {
+
+            Log.e("--------------->local", q.term + " / " + q.definition);
             mCardAdapter.addCardItem(new CardItem(q.term, q.sentence, q.answer, q.choice1, q.choice2, q.choice3));
         }
     }
 
-            public void hintDialog(){
-                LayoutInflater inflater = getLayoutInflater();
-                final View v = inflater.inflate(R.layout.fragment_adapter,null);
-                final AlertDialog d = new AlertDialog.Builder(this)
-                        .setView(v)
-                        .create();
-                d.show();
+    public void hintDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        final View v = inflater.inflate(R.layout.fragment_adapter, null);
+        final AlertDialog d = new AlertDialog.Builder(this)
+                .setView(v)
+                .create();
+        d.show();
 
-                Button close = (Button)v.findViewById(id.return_button);
-                TextView hintText = (TextView)v.findViewById(id.definitionTextView);
-                hintText.setText(mQuestions.getAQuestion(CardPagerAdapter.questionIndex()).hint);
-                close.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        d.dismiss();
-                    }
-                });
-
-
-            }
-
-            public void dictionaryDialog(){
-                LayoutInflater inflater = getLayoutInflater();
-                final View v = inflater.inflate(R.layout.fragment_adapter,null);
-                final AlertDialog d = new AlertDialog.Builder(this)
-                        .setView(v)
-                        .create();
-                d.show();
-
-                Button close = (Button)v.findViewById(id.return_button);
-                TextView definitionText = (TextView)v.findViewById(id.definitionTextView);
-                TextView titleText = (TextView)v.findViewById(id.titleTextView);
-                titleText.setText("Definition");
-                definitionText.setText(mQuestions.getAQuestion(CardPagerAdapter.questionIndex()).definition);
-                close.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        d.dismiss();
-                    }
-                });
-
-
-            }
-
-            public String getTscore() {
-                TextView score = (TextView)findViewById(id.tScore);
-                String curScore = score.getText().toString();
-                return curScore;
-            }
-
+        Button close = (Button) v.findViewById(id.return_button);
+        TextView hintText = (TextView) v.findViewById(id.definitionTextView);
+        hintText.setText(mQuestions.getAQuestion(CardPagerAdapter.questionIndex()).hint);
+        close.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void UpdateScore(String score) {
-                TextView textView = (TextView)findViewById(id.tScore);
-                textView.setText(score);
+            public void onClick(View view) {
+                d.dismiss();
             }
+        });
 
-            public void resetScore(View view){
-                SharedPreferences sharedPref = getSharedPreferences("scores", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt("top", 0);
-                editor.putInt("bottom", 0);
-                editor.commit();
-                TextView score = findViewById(id.tScore);
-                score.setText("0/0");
+
+    }
+
+    public void dictionaryDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        final View v = inflater.inflate(R.layout.fragment_adapter, null);
+        final AlertDialog d = new AlertDialog.Builder(this)
+                .setView(v)
+                .create();
+        d.show();
+
+        Button close = (Button) v.findViewById(id.return_button);
+        TextView definitionText = (TextView) v.findViewById(id.definitionTextView);
+        TextView titleText = (TextView) v.findViewById(id.titleTextView);
+        titleText.setText("Definition");
+        definitionText.setText(mQuestions.getAQuestion(CardPagerAdapter.questionIndex()).definition);
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
             }
+        });
+
+
+    }
+
+    public String getTscore() {
+        TextView score = (TextView) findViewById(id.tScore);
+        String curScore = score.getText().toString();
+        return curScore;
+    }
+
+    @Override
+    public void UpdateScore(String score) {
+        TextView textView = (TextView) findViewById(id.tScore);
+        textView.setText(score);
+    }
+
+    public void resetScore(View view) {
+        SharedPreferences sharedPref = getSharedPreferences("scores", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("top", 0);
+        editor.putInt("bottom", 0);
+        editor.commit();
+        TextView score = findViewById(id.tScore);
+        score.setText("0/0");
+    }
 
 
             /*@Override

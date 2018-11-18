@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Grammar App</string>
-<!--
+    <string name="title_activity_authenticate">authenticate</string>
+    <!--
     <string name="word_1">PROPONENT</string>
     <string name="title_2">POISONED</string>
     <string name="title_3">THEORY</string>

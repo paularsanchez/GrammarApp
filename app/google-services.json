@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "937205919033",
+    "firebase_url": "https://grammar-app-4ba4c.firebaseio.com",
+    "project_id": "grammar-app-4ba4c",
+    "storage_bucket": "grammar-app-4ba4c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937205919033:android:2802fc90330b5376",
+        "android_client_info": {
+          "package_name": "com.github.rubensousa.viewpagercards"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "937205919033-khjectral9uptu3fjesmod6f5hvq4hso.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.rubensousa.viewpagercards",
+            "certificate_hash": "0d8e14327e50def9b81b80b2b1afde72ae596b4c"
+          }
+        },
+        {
+          "client_id": "937205919033-luee65897dua0oklj5vr6n0ektuh3t2j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwU-oVKjG7k4llP2hb3UHR8V41F0snnNQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "937205919033-luee65897dua0oklj5vr6n0ektuh3t2j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
